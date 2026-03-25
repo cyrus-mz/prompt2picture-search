@@ -1,0 +1,9 @@
+#python
+.venv/
+__pycache__/
+
+#vscode
+.vscode/
+
+#data
+data/
