@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import clip
-import torch
-
-import numpy as np
 from functools import lru_cache
 from pathlib import Path
+
+import clip
+import numpy as np
+import torch
 from PIL import Image
 
 
