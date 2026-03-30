@@ -6,7 +6,19 @@ from pathlib import Path
 import faiss
 import numpy as np
 
-from src.config import DB_FILE, INDEX_FILE, IMAGE_FOLDER
+from src.config import DB_FILE, INDEX_FILE
+
+
+def create_faiss_index(dimension: int):
+    if dimension <= 0:
+        raise ValueError(f'dimension must be greater than 0, got {dimension}')
+    return faiss.IndexFlatL2(dimension)
+
+
+def save_faiss_index(index) -> None:
+    index_path = Path(INDEX_FILE)
+    index_path.parent.mkdir(parents=True, exist_ok=True)
+    faiss.write_index(index, str(index_path))
 
 
 def load_faiss_index():
@@ -18,6 +30,24 @@ def load_faiss_index():
         )
 
     return faiss.read_index(str(index_path))
+
+
+def load_or_create_faiss_index(dimension: int):
+    index_path = Path(INDEX_FILE)
+    if index_path.exists():
+        return faiss.read_index(str(index_path))
+    return create_faiss_index(dimension)
+
+
+def add_embeddings(index, embeddings: np.ndarray) -> None:
+    embeddings = np.asarray(embeddings, dtype=np.float32)
+
+    if embeddings.ndim != 2:
+        raise ValueError(
+            f'Expected embeddings to have shape (batch_size, dim), got {embeddings.shape}'
+        )
+
+    index.add(embeddings)
 
 
 def search_index(query_vector: np.ndarray, top_k: int = 5):
@@ -51,14 +81,16 @@ def load_index_records() -> list[dict]:
         if entry.get('embedding') is None:
             continue
 
-        filename = entry['filename']
-        image_path = Path(IMAGE_FOLDER) / filename
+        source_path = entry.get('source_path')
+        if not source_path:
+            continue
 
         records.append(
             {
                 'image_id': image_id,
-                'filename': filename,
-                'path': str(image_path),
+                'filename': entry['filename'],
+                'path': source_path,
+                'source_path': source_path,
             }
         )
 
