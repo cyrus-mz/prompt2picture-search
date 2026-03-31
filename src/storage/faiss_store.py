@@ -106,3 +106,9 @@ def get_record_by_faiss_index(faiss_index: int) -> dict:
         )
 
     return records[faiss_index]
+
+
+def delete_faiss_index() -> None:
+    index_path = Path(INDEX_FILE)
+    if index_path.exists():
+        index_path.unlink()
