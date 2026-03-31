@@ -203,3 +203,33 @@ def ingest_images(image_paths: Sequence[str | Path], batch_size: int = 32) -> di
         save_faiss_index(index)
 
     return report
+
+
+def collect_image_paths_from_folder(folder_path: str | Path, recursive: bool = True) -> list[Path]:
+    folder = Path(folder_path).expanduser().resolve()
+
+    if not folder.exists():
+        raise FileNotFoundError(f'Folder not found: {folder}')
+
+    if not folder.is_dir():
+        raise ValueError(f'Path is not a directory: {folder}')
+
+    pattern = '**/*' if recursive else '*'
+
+    image_paths = sorted(
+        path for path in folder.glob(pattern)
+        if path.is_file() and path.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
+    )
+
+    return image_paths
+
+
+def ingest_folder(folder_path: str | Path, recursive: bool = True, batch_size: int = 32) -> dict:
+    image_paths = collect_image_paths_from_folder(folder_path, recursive=recursive)
+
+    report = ingest_images(image_paths=image_paths, batch_size=batch_size)
+    report['folder_path'] = str(Path(folder_path).expanduser().resolve())
+    report['recursive'] = recursive
+    report['discovered_count'] = len(image_paths)
+
+    return report
