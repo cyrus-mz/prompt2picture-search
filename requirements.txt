@@ -6,5 +6,5 @@ Pillow==11.3.0
 tqdm==4.67.1
 regex==2024.11.6
 ftfy==6.3.1
-clip==1.0
+clip @ git+https://github.com/openai/CLIP.git
 streamlit==1.46.1

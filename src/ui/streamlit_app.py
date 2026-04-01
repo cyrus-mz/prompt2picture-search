@@ -11,7 +11,7 @@ from src.services.search_service import search_by_text
 
 
 st.set_page_config(
-    page_title='Prompt2PictureAgent',
+    page_title='Prompt2PictureSearch',
     page_icon='🖼️',
     layout='wide',
 )
@@ -79,12 +79,12 @@ def search_tab() -> None:
 
 def ingestion_tab() -> None:
     st.header('Add Folder to Library')
-    st.caption('This app uses linked local files. It indexes images in place and does not copy them.')
+    st.caption('This app uses local files. It indexes images in place and does not copy them.')
 
     with st.form('ingestion_form'):
         folder_path = st.text_input(
             'Folder path',
-            placeholder='/home/cyrus/Pictures/trip_photos',
+            placeholder='/home/user/Pictures/trip_photos',
         )
         recursive = st.checkbox('Scan subfolders recursively', value=True)
         batch_size = st.slider('Embedding batch size', min_value=1, max_value=128, value=16)
@@ -190,8 +190,8 @@ def library_tab() -> None:
 
 
 def main() -> None:
-    st.title('Prompt2PictureAgent')
-    st.caption('A local semantic photo search app for linked personal image libraries.')
+    st.title('Prompt2PictureSearch')
+    st.caption('A local semantic photo search app for personal image libraries.')
 
     search, ingest, library = st.tabs(['Search', 'Ingest', 'Library'])
 
